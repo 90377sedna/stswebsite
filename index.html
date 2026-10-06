@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barangay Reporting</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="barangay.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+  <div class="logo" onclick="showPage('home')">Barangay Logo</div>
+
+  <div class="mobile-nav-backdrop" id="nav-backdrop" onclick="closeMobileNav()"></div>
+  <div class="mobile-sidebar" id="mobile-sidebar" aria-label="Main navigation">
+    <div class="menu" data-role="guest">
+      <a onclick="showPage('news')">News</a><a onclick="showPage('events')">Events</a>
+      <a onclick="showPage('login')">Reports</a>
+    </div>
+    <div class="menu" data-role="resident">
+      <a onclick="showPage('r-dash')">Dashboard</a><a id="resident-reports-link" onclick="showPage('r-reports')">My Reports <span class="nav-dot" aria-hidden="true" hidden></span></a>
+      <a id="resident-requests-link" onclick="showPage('r-requests')">My Requests <span class="nav-dot" aria-hidden="true" hidden></span></a>
+    </div>
+    <div class="menu" data-role="officer">
+      <a onclick="showPage('o-dash')">Dashboard</a><a id="officer-reports-link" onclick="showPage('o-reports')">Reports <span class="nav-dot" aria-hidden="true" hidden></span></a>
+      <a id="officer-requests-link" onclick="showPage('o-requests')">Document Requests <span class="nav-dot" aria-hidden="true" hidden></span></a><a onclick="showPage('o-residents')">Residents</a>
+    </div>
+    <div class="account-menu" id="account-menu" aria-label="Account menu" aria-hidden="true">
+      <a id="account-link" onclick="showPage(me ? 'profile' : 'login')">Log in</a>
+      <a class="menu-bell" id="bell" onclick="showPage('notifications')" style="display:none">Notifications <span class="badge-count" id="bell-count"></span></a>
+      <a onclick="showPage('about')">About</a>
+      <a onclick="showPage('settings')">Settings</a>
+      <a id="logout-link" onclick="logout()" style="display:none">Log out</a>
+    </div>
+  </div>
+
+  <button class="profile" type="button" onclick="toggleAccountMenu()" title="Account" aria-label="Open account menu" aria-controls="account-menu" aria-expanded="false">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3a37b8" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+    <span class="notification-dot" id="profile-dot" aria-hidden="true" hidden></span>
+  </button>
+</nav>
+
+<div class="container">
+
+<section id="home" class="page active">
+  <h1 class="headline">Barangay<br>Reporting<br><span>made easier.</span></h1>
+  <div class="report-row">
+    <span id="changing-word">Maingay?</span>
+    <button onclick="goReport()"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a2 2 0 0 0 2 2h2l8 5V4l-8 5H5a2 2 0 0 0-2 2Z"/><path d="m7 15 2 6h3l-2.5-5.5M18 9l3-2M18 15l3 2M18 12h4"/></svg><span>REPORT MO!</span></button>
+  </div>
+  <p class="muted" style="margin-top:40px">Demo logins: resident <b>maria@example.ph</b> / <b>resident123</b> Â· officer <b>officer@barangay.ph</b> / <b>officer123</b></p>
+  <section class="home-updates" aria-label="News and events">
+    <div class="home-update">
+      <h2>News</h2>
+      <p><b>Garbage collection schedule</b><br>Collection currently runs every Tuesday and Friday.</p>
+      <a onclick="showPage('news')">See all news</a>
+    </div>
+    <div class="home-update">
+      <h2>Upcoming events</h2>
+      <p><b>Barangay Assembly</b><br>October 18, 2026 at the Barangay Hall.</p>
+      <a onclick="showPage('events')">See all events</a>
+    </div>
+  </section>
+</section>
+
+<section id="news" class="page"><h2>News</h2>
+  <div class="box"><h3>Garbage collection moves to Tuesday and Friday</h3><p>Trucks now pass all puroks twice a week.</p></div></section>
+<section id="events" class="page"><h2>Events</h2>
+  <div class="box"><h3>Barangay Assembly</h3><p>October 18, 2026 at the Barangay Hall.</p></div></section>
+<section id="about" class="page"><h2>About and Contact</h2>
+  <div class="box"><p>Write about your barangay here.</p><p>Barangay Hall, Poblacion Â· 0917 555 0001 Â· officer@barangay.ph<br>Monday to Friday, 8:00 AM to 5:00 PM</p></div></section>
+<section id="settings" class="page"><h2>Settings</h2>
+  <div class="box"><p>Settings will be available here soon.</p></div></section>
+
+<section id="login" class="page"><h2>Log in</h2>
+  <div class="box narrow">
+    <form onsubmit="login(event)">
+      <label>I am a</label>
+      <select id="login-role"><option value="resident">Resident</option><option value="officer">Barangay Officer</option></select>
+      <label>Email</label><input id="login-email" type="email">
+      <label>Password</label><input id="login-pass" type="password">
+      <p class="error" id="login-error"></p>
+      <button>Log in</button>
+    </form>
+    <p class="muted">No account yet? <a onclick="showPage('register')">Register as a resident</a></p>
+  </div>
+</section>
+
+<section id="register" class="page"><h2>Create a resident account</h2>
+  <div class="box narrow">
+    <form onsubmit="register(event)">
+      <label>Full name</label><input id="reg-name">
+      <label>Email</label><input id="reg-email" type="email">
+      <label>Mobile number</label><input id="reg-phone" placeholder="09171234567">
+      <label>Home address</label><input id="reg-address">
+      <label>Password (at least 8 characters)</label><input id="reg-pass" type="password">
+      <label>Confirm password</label><input id="reg-pass2" type="password">
+      <p class="error" id="reg-error"></p>
+      <button>Create account</button>
+    </form>
+  </div>
+</section>
+
+<section id="r-dash" class="page">
+  <h2 id="welcome">Welcome</h2>
+  <div class="cards">
+    <div class="box"><h3>Report a Problem</h3><button onclick="showPage('report-new')">Report now</button></div>
+    <div class="box"><h3>Request a Document</h3><button onclick="showPage('request-new')">Request now</button></div>
+    <div class="box"><h3>My Reports</h3><button class="outline" onclick="showPage('r-reports')">View</button></div>
+    <div class="box"><h3>My Requests</h3><button class="outline" onclick="showPage('r-requests')">View</button></div>
+  </div>
+  <div class="box"><h3>Active items</h3><div id="r-active"></div></div>
+  <div class="box"><h3>Recent notifications</h3><div id="r-notifs"></div></div>
+</section>
+
+<section id="report-new" class="page"><h2>Report a Problem</h2>
+  <div class="box"><form onsubmit="newReport(event)">
+    <label>Report title</label><input id="rp-title">
+    <label>Category</label>
+    <select id="rp-cat"><option value="">Choose a category</option>
+      <option>Road Damage</option><option>Garbage / Waste</option><option>Streetlight Problem</option><option>Flooding</option><option>Drainage</option><option>Noise Complaint</option><option>Public Safety</option><option>Stray Animals</option><option>Other</option></select>
+    <label>Description</label><textarea id="rp-desc" rows="4"></textarea>
+    <label>Location</label><input id="rp-loc" placeholder="Street, purok, landmark">
+    <label>Date and time of incident</label><input id="rp-when" type="datetime-local">
+    <label>Photo (optional, JPG or PNG, max 1 MB)</label><input id="rp-img" type="file" accept="image/jpeg,image/png">
+    <label>Contact number</label><input id="rp-phone">
+    <p class="error" id="rp-error"></p>
+    <button>Submit report</button>
+  </form></div>
+</section>
+
+<section id="r-reports" class="page"><h2>My Reports</h2><div class="box scroll" id="r-reports-list"></div></section>
+
+<section id="request-new" class="page"><h2>Request a Document</h2>
+  <div class="box"><form onsubmit="newRequest(event)">
+    <label>Document type</label>
+    <select id="rq-type"><option value="">Choose a document</option>
+      <option>Barangay Clearance</option><option>Certificate of Residency</option><option>Certificate of Indigency</option><option>Barangay Certificate</option><option>Business Clearance</option><option>Other Barangay Documents</option></select>
+    <label>Purpose</label><input id="rq-purpose">
+    <label>Number of copies</label><input id="rq-copies" type="number" min="1" max="10" value="1">
+    <label>Preferred pickup date</label><input id="rq-pickup" type="date">
+    <label>Additional information (optional)</label><textarea id="rq-info" rows="3"></textarea>
+    <label>Supporting document (optional, PDF/JPG/PNG, max 1 MB)</label><input id="rq-file" type="file" accept="application/pdf,image/jpeg,image/png">
+    <p class="error" id="rq-error"></p>
+    <button>Submit request</button>
+  </form></div>
+</section>
+
+<section id="r-requests" class="page"><h2>My Requests</h2><div class="box scroll" id="r-requests-list"></div></section>
+
+<section id="detail" class="page"><a onclick="history.length&&showPage(lastList)">&larr; Back to list</a><div id="detail-body"></div></section>
+
+<section id="notifications" class="page"><h2>Notifications</h2><div class="box" id="notif-list"></div></section>
+
+<section id="profile" class="page"><h2>My Profile</h2>
+  <div class="box narrow"><form onsubmit="saveProfile(event)">
+    <label>Full name</label><input id="pf-name">
+    <label>Email (cannot be changed)</label><input id="pf-email" disabled>
+    <label>Mobile number</label><input id="pf-phone">
+    <label>Address</label><input id="pf-address">
+    <p class="error" id="pf-error"></p>
+    <button>Save changes</button>
+  </form></div>
+</section>
+
+<section id="o-dash" class="page"><h2>Officer Dashboard</h2>
+  <div class="cards" id="o-stats"></div>
+  <div class="box"><h3>Reports by status</h3><div id="o-chart"></div></div>
+</section>
+
+<section id="o-reports" class="page"><h2>Reports Management</h2>
+  <div class="box filters">
+    <input id="f-rq" placeholder="Search title, ID, resident" oninput="renderOfficerReports()">
+    <select id="f-rc" onchange="renderOfficerReports()"><option value="">All categories</option></select>
+    <select id="f-rs" onchange="renderOfficerReports()"><option value="">All statuses</option></select>
+    <input id="f-rd" type="date" title="Submitted since" onchange="renderOfficerReports()">
+  </div>
+  <div class="box scroll" id="o-reports-list"></div>
+</section>
+
+<section id="o-requests" class="page"><h2>Document Requests</h2>
+  <div class="box filters">
+    <input id="f-qq" placeholder="Search ID, document, resident" oninput="renderOfficerRequests()">
+    <select id="f-qt" onchange="renderOfficerRequests()"><option value="">All documents</option></select>
+    <select id="f-qs" onchange="renderOfficerRequests()"><option value="">All statuses</option></select>
+  </div>
+  <div class="box scroll" id="o-requests-list"></div>
+</section>
+
+<section id="o-residents" class="page"><h2>Residents</h2>
+  <div class="box"><input id="f-res" placeholder="Search residents" oninput="renderResidents()"></div>
+  <div class="box scroll" id="o-residents-list"></div>
+</section>
+
+</div>
+
+<dialog id="ask"><h3 id="ask-title"></h3><textarea id="ask-text" rows="4"></textarea><p class="error" id="ask-error"></p>
+  <button class="outline" onclick="$('ask').close()">Cancel</button> <button id="ask-ok">Confirm</button></dialog>
+<div id="toast"></div>
+
+<script src="barangay.js"></script>
+</body>
+</html>
